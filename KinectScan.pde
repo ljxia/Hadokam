@@ -49,6 +49,10 @@ void setup()
   ProcessFaces();
   
   println(kFaces.size() + " Faces");
+  
+  
+  
+  setupControls();
 }
 
 void draw()
@@ -94,6 +98,12 @@ void draw()
   image(frontImage, -frontImage.width/4, -frontImage.height/4, frontImage.width/2, frontImage.height/2);
   
   popMatrix();
+  
+  cam.beginHUD();
+  
+  controlP5.draw();
+  
+  cam.endHUD();
 }
 
 void mousePressed()
@@ -144,7 +154,7 @@ void drawKFaces()
     {
      PVector v = f.vertices.get(j);
       
-      vertex(v.x, v.y, v.z, v.x * 4.5 + frontImage.width/2, v.y * 4.5 + frontImage.height/2);
+      vertex(v.x, v.y, v.z, v.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, v.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
       
       //println(v.x + ", " + v.y + ", " + v.z);
     }
