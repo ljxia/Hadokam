@@ -159,6 +159,22 @@ void drawKFaces()
       //println(v.x + ", " + v.y + ", " + v.z);
     }
     endShape(CLOSE);
+    
+    
+    beginShape(TRIANGLES);
+    texture(frontImage);
+    for (int j = 0; j < f.getUvs().length; j++)
+    {
+      PVector v = (f.getUvs())[j];
+      PVector p = f.vertices.get(j);
+      
+      vertex(v.x * 1000, v.y * 1000, -500, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
+      
+      //println(v.x + ", " + v.y + ", " + v.z);
+    }
+    endShape(CLOSE);
+    
+    
   }
   
   
