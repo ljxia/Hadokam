@@ -7,6 +7,8 @@ float front_image_offset_y = 0;
 float front_image_scale_x = 4.5;
 float front_image_scale_y = 4.5;
 
+Button exportButton;
+
 void setupControls()
 {
   controlP5 = new ControlP5(this);
@@ -31,4 +33,12 @@ void setupControls()
   
   slider = controlP5.addSlider("front_image_scale_y",  0.1, 5.0, 4.5,  40,100,200,10);
   slider.setLabel("Front Image Scale Y");
+  
+  
+  exportButton = controlP5.addButton("export",3000,40, 120,120,20);
+}
+
+public void export()
+{
+  println("export");
 }
