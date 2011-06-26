@@ -31,10 +31,10 @@ void setupControls()
   slider = controlP5.addSlider("front_image_offset_y",  -500,  500, 0,  40,60,200,10);
   slider.setLabel("Front Image Offset Y");
   
-  slider = controlP5.addSlider("front_image_scale_x",  0.1, 5.0, 4.5,  40,80,200,10);
+  slider = controlP5.addSlider("front_image_scale_x",  0.1, 10.0, 4.5,  40,80,200,10);
   slider.setLabel("Front Image Scale X");
   
-  slider = controlP5.addSlider("front_image_scale_y",  0.1, 5.0, 4.5,  40,100,200,10);
+  slider = controlP5.addSlider("front_image_scale_y",  0.1, 10.0, 4.5,  40,100,200,10);
   slider.setLabel("Front Image Scale Y");
   
   slider = controlP5.addSlider("kinect_depth_threshold",  0, 2047, kinect_depth_threshold,  340,40,200,10);
@@ -82,6 +82,6 @@ public void export()
   
   gfx.endDraw();
   
-  gfx.save("dump.png");
+  gfx.save(charName + "_" + personName + ".png");
   
 }

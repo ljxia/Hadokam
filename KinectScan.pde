@@ -34,15 +34,20 @@ PVector depthRange;
 int w = 640;
 int h = 480;
 
+Boolean ENABLE_KINECT = false;
+
 // We'll use a lookup table so that we don't have to repeat the math over and over
 float[] depthLookUp = new float[2048];
+
+String charName = "VEGA_01";
+String personName = "hristo";
 
 void setup()
 {
   size(1280, 800, OPENGL);
 
   // making an object called "model" that is a new instance of OBJModel
-  model = new OBJModel(this, "RYU_01.cos.emz.obj", TRIANGLES);
+  model = new OBJModel(this, charName + ".cos.emz.obj", TRIANGLES);
 
   // turning on the debug output (it's all the stuff that spews out in the black box down the bottom)
   model.enableDebug();
@@ -51,8 +56,8 @@ void setup()
   
   bbox = new BoundingBox(this, model);
   
-  frontImage = loadImage("front.jpg");
-  sideImage = loadImage("side.jpg");
+  frontImage = loadImage(personName + ".JPG");
+  //sideImage = loadImage("side.jpg");
   
   println(bbox.getMin().x + ", " + bbox.getMin().y);
   println(bbox.getMax().x + ", " + bbox.getMax().y);
@@ -69,19 +74,24 @@ void setup()
   
   ProcessFaces();
   
-  //println(kFaces.size() + " Faces");
-  
-  kinect = new Kinect(this);
-  kinect.start();
-  kinect.enableDepth(true);
-  // We don't need the grayscale image in this example
-  // so this makes it more efficient
-  kinect.processDepthImage(false);
+  if (ENABLE_KINECT)
+  {
+    //println(kFaces.size() + " Faces");
 
-  // Lookup table for all possible depth values (0 - 2047)
-  for (int i = 0; i < depthLookUp.length; i++) {
-    depthLookUp[i] = rawDepthToMeters(i);
+    kinect = new Kinect(this);
+    kinect.start();
+    kinect.enableDepth(true);
+    // We don't need the grayscale image in this example
+    // so this makes it more efficient
+    kinect.processDepthImage(false);
+
+    // Lookup table for all possible depth values (0 - 2047)
+    for (int i = 0; i < depthLookUp.length; i++) {
+      depthLookUp[i] = rawDepthToMeters(i);
+    }    
   }
+  
+
   
   setupControls();
   
@@ -139,41 +149,42 @@ void draw()
   image(frontImage, -frontImage.width/4, -frontImage.height/4, frontImage.width/2, frontImage.height/2);
   popMatrix();
   
-  
-  // Get the raw depth as array of integers
-  int[] depth = kinect.getRawDepth();
-  int skip = 6;
-  
-  stroke(0);
-  fill(0);
-  
-  for(int x=0; x<w; x+=skip) {
-    for(int y=0; y<h; y+=skip) {
-      int offset = x+y*w;
-  
-      // Convert kinect data to world xyz coordinate
-      int rawDepth = depth[offset];
-      
-      if (rawDepth < kinect_depth_threshold)
-      {
-        PVector v = depthToWorld(x,y,rawDepth);
-        
-        PVector vthreshold = depthToWorld(x,y,kinect_depth_threshold);
+  if (ENABLE_KINECT)
+  {
+    // Get the raw depth as array of integers
+    int[] depth = kinect.getRawDepth();
+    int skip = 2;
 
-        // if (v.z < depthRange.x){depthRange.x = v.z;}
-        // if (v.z > depthRange.y){depthRange.y = v.z;}
+    stroke(0);
+    fill(0);
 
-        stroke(255);
-        pushMatrix();
-        // Scale up by 200
-        translate(v.x*kinect_scale - 300,v.y*kinect_scale,(v.z - vthreshold.z)*kinect_scale);
-        // Draw a point
-        point(0,0);
-        popMatrix();
+    for(int x=0; x<w; x+=skip) {
+      for(int y=0; y<h; y+=skip) {
+        int offset = x+y*w;
+
+        // Convert kinect data to world xyz coordinate
+        int rawDepth = depth[offset];
+
+        if (rawDepth < kinect_depth_threshold)
+        {
+          PVector v = depthToWorld(x,y,rawDepth);
+
+          PVector vthreshold = depthToWorld(x,y,kinect_depth_threshold);
+
+          // if (v.z < depthRange.x){depthRange.x = v.z;}
+          // if (v.z > depthRange.y){depthRange.y = v.z;}
+
+          stroke(255);
+          pushMatrix();
+          // Scale up by 200
+          translate(v.x*kinect_scale - 300,v.y*kinect_scale,(v.z - vthreshold.z)*kinect_scale);
+          // Draw a point
+          point(0,0);
+          popMatrix();
+        }
       }
     }
   }
-  
   
   
   popMatrix();
@@ -285,6 +296,10 @@ void drawKFaces()
 }
 
 void stop() {
-  kinect.quit();
+  if (ENABLE_KINECT)
+  {
+    kinect.quit();
+  }
+  
   super.stop();
 }
