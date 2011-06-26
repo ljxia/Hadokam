@@ -16,6 +16,9 @@ PImage sideImage;
 
 ArrayList<KFace> kFaces;
 
+PVector mapMin;
+PVector mapMax;
+
 void setup()
 {
   size(800, 800, OPENGL);
@@ -49,8 +52,6 @@ void setup()
   ProcessFaces();
   
   println(kFaces.size() + " Faces");
-  
-  
   
   setupControls();
 }
@@ -130,6 +131,9 @@ void ProcessFaces()
       kFaces.add(kFace);      
     }
   }
+  
+  mapMin = new PVector(9000, 9000);
+  mapMax = new PVector(-9000, -9000);
 }
 
 
@@ -168,13 +172,28 @@ void drawKFaces()
       PVector v = (f.getUvs())[j];
       PVector p = f.vertices.get(j);
       
-      vertex(v.x * 1000, v.y * 1000, -500, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
+      vertex(v.x * 1000, v.y * 1000, 100, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
       
       //println(v.x + ", " + v.y + ", " + v.z);
+      
+      if (v.x * 1000 < mapMin.x)
+      {
+        mapMin.x = v.x * 1000;
+      }
+      if (v.x * 1000 > mapMax.x)
+      {
+        mapMax.x = v.x * 1000;
+      }
+      if (v.y * 1000 < mapMin.y)
+      {
+        mapMin.y = v.y * 1000;
+      }
+      if (v.y * 1000 > mapMax.y)
+      {
+        mapMax.y = v.y * 1000;
+      }
     }
     endShape(CLOSE);
-    
-    
   }
   
   

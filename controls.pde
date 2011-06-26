@@ -41,4 +41,37 @@ void setupControls()
 public void export()
 {
   println("export");
+  println(mapMin);
+  println(mapMax);
+  
+  PGraphics gfx = createGraphics(ceil(mapMax.x - mapMin.x), ceil(mapMax.y - mapMin.y), P3D);
+  gfx.noStroke();
+  gfx.fill(255);
+  
+  gfx.beginDraw();
+  
+  for (int i = 0; i < kFaces.size(); i++)
+  {
+    
+    Face f = kFaces.get(i).getFace();
+    
+    gfx.beginShape(TRIANGLES);
+    gfx.texture(frontImage);
+    
+    gfx.noStroke();
+    
+    for (int j = 0; j < f.getUvs().length; j++)
+    {
+      PVector v = f.uvs.get(j);
+      PVector p = f.vertices.get(j);
+      //gfx.vertex(v.x * 1000 - mapMin.x, v.y * 1000 - mapMin.y);
+      gfx.vertex(v.x * 1000 - mapMin.x, v.y * 1000 - mapMin.y,0, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
+    }
+    gfx.endShape(CLOSE);
+  }
+  
+  gfx.endDraw();
+  
+  gfx.save("dump.png");
+  
 }
