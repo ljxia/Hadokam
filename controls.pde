@@ -65,7 +65,7 @@ public void export()
       PVector v = f.uvs.get(j);
       PVector p = f.vertices.get(j);
       //gfx.vertex(v.x * 1000 - mapMin.x, v.y * 1000 - mapMin.y);
-      gfx.vertex(v.x * 1000 - mapMin.x, v.y * 1000 - mapMin.y,0, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
+      gfx.vertex(v.x * factor - mapMin.x, v.y * factor - mapMin.y,0, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
     }
     gfx.endShape(CLOSE);
   }

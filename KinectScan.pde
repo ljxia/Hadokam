@@ -19,6 +19,8 @@ ArrayList<KFace> kFaces;
 PVector mapMin;
 PVector mapMax;
 
+int factor = 1000;
+
 void setup()
 {
   size(800, 800, OPENGL);
@@ -28,7 +30,7 @@ void setup()
 
   // turning on the debug output (it's all the stuff that spews out in the black box down the bottom)
   model.enableDebug();
-  model.scale(1000);
+  model.scale(factor);
   model.translateToCenter();
   
   bbox = new BoundingBox(this, model);
@@ -58,7 +60,7 @@ void setup()
 
 void draw()
 {
-  background(200);
+  background(20);
   
   ambientLight(255,255,255);
   lightSpecular(255,255,255);
@@ -144,11 +146,17 @@ void drawKFaces()
   fill(255);
   
   //println(kFaces.size());
+  //PVector in = new PVector(0,0,1);
   
   for (int i = 0; i < kFaces.size(); i++)
   {
     
     Face f = kFaces.get(i).getFace();
+    
+    // if (f.isFacingPosition(in))
+    // {
+    //   continue;
+    // }
     
     //println(f.vertices.size());
     
@@ -172,25 +180,25 @@ void drawKFaces()
       PVector v = (f.getUvs())[j];
       PVector p = f.vertices.get(j);
       
-      vertex(v.x * 1000, v.y * 1000, 100, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
+      vertex(v.x * factor - width/2, v.y * factor - height/2, 3000, p.x * front_image_scale_x + frontImage.width/2 + front_image_offset_x, p.y * front_image_scale_y + frontImage.height/2 + front_image_offset_y);
       
       //println(v.x + ", " + v.y + ", " + v.z);
       
-      if (v.x * 1000 < mapMin.x)
+      if (v.x * factor < mapMin.x)
       {
-        mapMin.x = v.x * 1000;
+        mapMin.x = v.x * factor;
       }
-      if (v.x * 1000 > mapMax.x)
+      if (v.x * factor > mapMax.x)
       {
-        mapMax.x = v.x * 1000;
+        mapMax.x = v.x * factor;
       }
-      if (v.y * 1000 < mapMin.y)
+      if (v.y * factor < mapMin.y)
       {
-        mapMin.y = v.y * 1000;
+        mapMin.y = v.y * factor;
       }
-      if (v.y * 1000 > mapMax.y)
+      if (v.y * factor > mapMax.y)
       {
-        mapMax.y = v.y * 1000;
+        mapMax.y = v.y * factor;
       }
     }
     endShape(CLOSE);
