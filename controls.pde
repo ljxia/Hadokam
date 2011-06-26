@@ -7,6 +7,9 @@ float front_image_offset_y = 0;
 float front_image_scale_x = 4.5;
 float front_image_scale_y = 4.5;
 
+int kinect_depth_threshold = 511;
+int kinect_scale = 400;
+
 Button exportButton;
 
 void setupControls()
@@ -33,6 +36,13 @@ void setupControls()
   
   slider = controlP5.addSlider("front_image_scale_y",  0.1, 5.0, 4.5,  40,100,200,10);
   slider.setLabel("Front Image Scale Y");
+  
+  slider = controlP5.addSlider("kinect_depth_threshold",  0, 2047, kinect_depth_threshold,  340,40,200,10);
+  slider.setLabel("Kinect Depth Filter");
+  
+  slider = controlP5.addSlider("kinect_scale",  1, 1000, 400,  340,60,200,10);
+  slider.setLabel("Kinect Depth Map Scale");
+
   
   
   exportButton = controlP5.addButton("export",3000,40, 120,120,20);

@@ -2,8 +2,16 @@ import saito.objloader.*;
 import processing.opengl.*;
 import peasy.*;
 
+import org.openkinect.*;
+import org.openkinect.processing.*;
+
+// import hypermedia.video.*;
+// import java.awt.Rectangle;
+
 // declare that we need a OBJModel and we'll be calling it "model"
 OBJModel model;
+Kinect kinect;
+// OpenCV opencv;
 
 int count = 0;
 
@@ -20,10 +28,18 @@ PVector mapMin;
 PVector mapMax;
 
 int factor = 1000;
+PVector depthRange;
+
+// Size of kinect image
+int w = 640;
+int h = 480;
+
+// We'll use a lookup table so that we don't have to repeat the math over and over
+float[] depthLookUp = new float[2048];
 
 void setup()
 {
-  size(800, 800, OPENGL);
+  size(1280, 800, OPENGL);
 
   // making an object called "model" that is a new instance of OBJModel
   model = new OBJModel(this, "RYU_01.cos.emz.obj", TRIANGLES);
@@ -47,15 +63,34 @@ void setup()
   
   cam.setRotations(0, PI, 0);
   cam.setMinimumDistance(200);
-  cam.setMaximumDistance(4800);
+  cam.setMaximumDistance(6000);
   
   kFaces = new ArrayList<KFace>();
   
   ProcessFaces();
   
-  println(kFaces.size() + " Faces");
+  //println(kFaces.size() + " Faces");
+  
+  kinect = new Kinect(this);
+  kinect.start();
+  kinect.enableDepth(true);
+  // We don't need the grayscale image in this example
+  // so this makes it more efficient
+  kinect.processDepthImage(false);
+
+  // Lookup table for all possible depth values (0 - 2047)
+  for (int i = 0; i < depthLookUp.length; i++) {
+    depthLookUp[i] = rawDepthToMeters(i);
+  }
   
   setupControls();
+  
+  depthRange = new PVector(9000, -9000);
+  
+  //kinect.enableRGB(true);
+  
+  // opencv = new OpenCV(this);
+  // opencv.cascade( OpenCV.CASCADE_FRONTALFACE_ALT );
 }
 
 void draw()
@@ -96,11 +131,53 @@ void draw()
   stroke(0,0,255);
   line(0,0,0,0,0,5000);
   
-  translate(0,0,-1000);
+  //image(kinect.getVideoImage(),-800, -h/2);
+  
+  pushMatrix();
+  translate(0,0,-3000);
   
   image(frontImage, -frontImage.width/4, -frontImage.height/4, frontImage.width/2, frontImage.height/2);
+  popMatrix();
+  
+  
+  // Get the raw depth as array of integers
+  int[] depth = kinect.getRawDepth();
+  int skip = 6;
+  
+  stroke(0);
+  fill(0);
+  
+  for(int x=0; x<w; x+=skip) {
+    for(int y=0; y<h; y+=skip) {
+      int offset = x+y*w;
+  
+      // Convert kinect data to world xyz coordinate
+      int rawDepth = depth[offset];
+      
+      if (rawDepth < kinect_depth_threshold)
+      {
+        PVector v = depthToWorld(x,y,rawDepth);
+        
+        PVector vthreshold = depthToWorld(x,y,kinect_depth_threshold);
+
+        // if (v.z < depthRange.x){depthRange.x = v.z;}
+        // if (v.z > depthRange.y){depthRange.y = v.z;}
+
+        stroke(255);
+        pushMatrix();
+        // Scale up by 200
+        translate(v.x*kinect_scale - 300,v.y*kinect_scale,(v.z - vthreshold.z)*kinect_scale);
+        // Draw a point
+        point(0,0);
+        popMatrix();
+      }
+    }
+  }
+  
+  
   
   popMatrix();
+  
   
   cam.beginHUD();
   
@@ -205,4 +282,9 @@ void drawKFaces()
   }
   
   
+}
+
+void stop() {
+  kinect.quit();
+  super.stop();
 }
